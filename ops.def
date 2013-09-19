@@ -1,0 +1,42 @@
+op no_op() {}
+
+op add_i(int64:w %0, int64:r %1, int64:r %2) {
+    %0 = %1 + %2
+}
+
+op sub_i(int64:w %0, int64:r %1, int64:r %2) {
+    %0 = %1 - %2
+}
+
+op mul_i(int64:w %0, int64:r %1, int64:r %2) {
+    %0 = %1 * %2
+}
+
+op div_i(int64:w %0, int64:r %1, int64:r %2) {
+    %0 = %1 / %2
+}
+
+op div_u(int64:w %0:u, int64:r %1:u, int64:r %2:u) {
+    %0 = %1 / %2
+}
+
+op mod_i(int64:w %0, int64:r %1, int64:r %2) {
+    %0 = %1 % %2
+}
+
+op mod_u(int64:w %0:u, int64:r %1:u, int64:r %2:u) {
+    %0 = %1 % %2
+}
+
+op neg_i(int64:w %0, int64:r %1) {
+    %0 = -%1
+}
+
+op abs_i(int64:w %0, int64:r %1) {
+    int64 mask = %1 >> 63
+    %0 = (%1 + mask) ^ mask
+}
+
+op const_i64(int64:w %0, int64 $1) {
+    %0 = $1
+}
