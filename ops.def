@@ -1,5 +1,10 @@
 op no_op() {}
 
+op goto(int32 $0:u) {
+    vm::gcsync()
+    vm::branch($0)
+}
+
 op add_i(int64:w %0, int64:r %1, int64:r %2) {
     %0 = %1 + %2
 }

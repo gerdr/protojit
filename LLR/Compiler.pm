@@ -68,11 +68,14 @@ my %regmap := nqp::hash(
 );
 
 my %sizemap := nqp::hash(
-    'int64', 8
+    'int32', 4,
+    'int64', 8,
+    'uint32', 4
 );
 
 my %getmap := nqp::hash(
-    'int64', 'I64'
+    'int64', 'I64',
+    'uint32', 'UI32'
 );
 
 multi toC(LLR::RegisterRValue $val) {
@@ -154,7 +157,16 @@ multi toC(LLR::Int $int) {
     "{ $int.value }"
 }
 
+multi toC(LLR::Intrinsic::GCSync $sync) {
+    'GC_SYNC_POINT(tc)'
+}
+
+multi toC(LLR::Intrinsic::Branch $branch) {
+    $*CUR_OFFSET := 0;
+    "cur_op = bytecode_start + { toC($branch.args[0]) }"
+}
+
 multi toC($node) {
-    nqp::die('FIXME: ' ~ $node);
+    nqp::die("FIXME: $node");
 }
 

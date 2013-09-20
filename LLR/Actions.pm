@@ -55,6 +55,19 @@ class LLR::Actions {
         ));
     }
 
+    method statement:sym<intrinsic>($/) {
+        $*SCOPE.push($<intrinsic>.ast);
+    }
+
+
+    method intrinsic:sym<gcsync>($/) {
+        make LLR::Intrinsic::GCSync.new();
+    }
+
+    method intrinsic:sym<branch>($/) {
+        make LLR::Intrinsic::Branch.new(args => [ $<var>.ast ]);
+    }
+
     method var:sym<%>($/) {
         make $*SCOPE.lookup(~$<name>).value(~$<typeflag>);
     }

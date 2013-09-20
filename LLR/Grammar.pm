@@ -24,13 +24,19 @@ grammar LLR::Grammar {
 
     proto token statement {*}
 
-    token statement:sym<assign> {
-        :s <var> '=' <expression>
-    }
+    token statement:sym<intrinsic> { <intrinsic> }
 
     token statement:sym<define> {
         :s <type><typeflag>? <lname> '=' <expression>
     }
+
+    token statement:sym<assign> {
+        :s <var> '=' <expression>
+    }
+
+    proto token intrinsic {*}
+    token intrinsic:sym<gcsync> { :s 'vm::'<sym> '(' ')' }
+    token intrinsic:sym<branch> { :s 'vm::'<sym> '(' <var> ')' }
 
     proto token var {*}
     token var:sym<%> { <sym> <name> <typeflag>? }

@@ -53,6 +53,15 @@ class LLR::Assignment {
     method rhs() { $!rhs }
 }
 
+my class Intrinsic {
+    has @!args;
+
+    method args() { @!args }
+}
+
+class LLR::Intrinsic::GCSync is Intrinsic {}
+class LLR::Intrinsic::Branch is Intrinsic {}
+
 class LLR::UnaryExpression {
     has $!op;
     has $!a;
