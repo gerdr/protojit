@@ -176,6 +176,16 @@ multi toC(LLR::Control::If $if) {
     $statement
 }
 
+multi toC(LLR::Control::Unless $un) {
+    my $offset := $*CUR_OFFSET;
+    my $statement := "if (!{ toC($un.condition) }) { toC($un.statement) }";
+    if $*CUR_OFFSET == 0 {
+        nqp::push(@*LINES, "    $statement; \\");
+        $statement := "else cur_op += $offset";
+    }
+    $statement
+}
+
 multi toC($node) {
     nqp::die("FIXME: $node");
 }

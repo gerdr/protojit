@@ -42,6 +42,11 @@ grammar LLR::Grammar {
         :s <sym> <term> <statement>
     }
 
+    token statement:sym<unless> {
+        :my $*SCOPE := LLR::Control::Unless.new;
+        :s <sym> <term> <statement>
+    }
+
     proto token intrinsic {*}
     token intrinsic:sym<gcsync> { :s 'vm::'<sym> '(' ')' }
     token intrinsic:sym<branch> { :s 'vm::'<sym> '(' <var> ')' }
@@ -64,7 +69,7 @@ grammar LLR::Grammar {
     token term:sym<parcel> { :s '(' ~ ')' <expression> }
     token term:sym<int> { <[+-]>? \d+ }
 
-    token keyword { [ if | <type> ] <?ws> }
+    token keyword { [ if | unless | <type> ] <?ws> }
     token type { int8 | int16 | int32 | int64 | num32 | num64 | obj | str }
     token name { \w+ }
     token lname { <!keyword> <[\w]-[\d]> \w* }

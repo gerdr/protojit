@@ -81,6 +81,7 @@ my class Control {
 }
 
 class LLR::Control::If is Control {}
+class LLR::Control::Unless is Control {}
 
 class LLR::UnaryExpression {
     has $!op;

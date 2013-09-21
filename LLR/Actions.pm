@@ -60,6 +60,11 @@ class LLR::Actions {
         $*OUTER.push($*SCOPE);
     }
 
+    method statement:sym<unless>($/) {
+        $*SCOPE.set-condition($<term>.ast);
+        $*OUTER.push($*SCOPE);
+    }
+
     method statement:sym<intrinsic>($/) {
         $*SCOPE.push($<intrinsic>.ast);
     }

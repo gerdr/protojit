@@ -10,6 +10,21 @@ op if_i(int64:r %0, int32 $1:u) {
     vm::gcsync()
 }
 
+op unless_i(int64:r %0, int32 $1:u) {
+    unless %0 vm::branch($1)
+    vm::gcsync()
+}
+
+op if_n(num64:r %0, int32 $1:u) {
+    if %0 vm::branch($1)
+    vm::gcsync()
+}
+
+op unless_n(num64:r %0, int32 $1:u) {
+    unless %0 vm::branch($1)
+    vm::gcsync()
+}
+
 op add_i(int64:w %0, int64:r %1, int64:r %2) {
     %0 = %1 + %2
 }
