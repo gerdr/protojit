@@ -62,6 +62,26 @@ my class Intrinsic {
 class LLR::Intrinsic::GCSync is Intrinsic {}
 class LLR::Intrinsic::Branch is Intrinsic {}
 
+my class Control {
+    has $!condition;
+    has $!statement;
+
+    method condition() { $!condition }
+    method statement() { $!statement }
+
+    method set-condition($condition) { $!condition := $condition }
+
+    method push($statement) {
+        $!statement := $statement;
+    }
+
+    method lookup($name) {
+        $*OUTER.lookup($name)
+    }
+}
+
+class LLR::Control::If is Control {}
+
 class LLR::UnaryExpression {
     has $!op;
     has $!a;

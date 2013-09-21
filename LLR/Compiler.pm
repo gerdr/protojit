@@ -89,8 +89,8 @@ multi toC(LLR::RegisterLValue $val) {
 }
 
 multi toC(LLR::LocalValue $val) {
-    $val.cast ?? "({ %typemap{$val.type} }){ $val.name }"
-              !! "{ $val.name }"
+    $val.cast ?? "({ %typemap{$val.type} })l_{ $val.name }"
+              !! "l_{ $val.name }"
 }
 
 multi toC(LLR::ConstantValue $val) {
@@ -123,7 +123,7 @@ multi toC(LLR::Constant $const) {
 }
 
 multi toC(LLR::Local $loc) {
-    "{ %typemap{$loc.type} } { $loc.name }"
+    "{ %typemap{$loc.type} } l_{ $loc.name }"
 }
 
 multi toC(LLR::UnaryExpression $expr) {
@@ -135,16 +135,16 @@ multi toC(LLR::BinaryExpression $expr) {
 }
 
 multi toC(LLR::Op $op) {
-    my @lines;
+    my @*LINES;
     my $*CUR_OFFSET := 0;
-    nqp::push(@lines, "#define { nqp::uc($op.name) } \\");
-    for $op.args { nqp::push(@lines, "    { toC($op.lookup($_)) }; \\") }
-    for $op.locals { nqp::push(@lines, "    { toC($op.lookup($_)) }; \\") }
-    for $op.code { nqp::push(@lines, "    { toC($_) }; \\") }
-    nqp::push(@lines, "    cur_op += $*CUR_OFFSET; \\")
+    nqp::push(@*LINES, "#define { nqp::uc($op.name) } \\");
+    for $op.args { nqp::push(@*LINES, "    { toC($op.lookup($_)) }; \\") }
+    for $op.locals { nqp::push(@*LINES, "    { toC($op.lookup($_)) }; \\") }
+    for $op.code { nqp::push(@*LINES, "    { toC($_) }; \\") }
+    nqp::push(@*LINES, "    cur_op += $*CUR_OFFSET; \\")
         if $*CUR_OFFSET;
-    nqp::push(@lines, "    goto NEXT;\n");
-    nqp::join("\n", @lines)
+    nqp::push(@*LINES, "    goto NEXT;\n");
+    nqp::join("\n", @*LINES)
 }
 
 multi toC(LLR::Unit $unit) {
@@ -164,6 +164,16 @@ multi toC(LLR::Intrinsic::GCSync $sync) {
 multi toC(LLR::Intrinsic::Branch $branch) {
     $*CUR_OFFSET := 0;
     "cur_op = bytecode_start + { toC($branch.args[0]) }"
+}
+
+multi toC(LLR::Control::If $if) {
+    my $offset := $*CUR_OFFSET;
+    my $statement := "if ({ toC($if.condition) }) { toC($if.statement) }";
+    if $*CUR_OFFSET == 0 {
+        nqp::push(@*LINES, "    $statement; \\");
+        $statement := "else cur_op += $offset";
+    }
+    $statement
 }
 
 multi toC($node) {

@@ -55,10 +55,14 @@ class LLR::Actions {
         ));
     }
 
+    method statement:sym<if>($/) {
+        $*SCOPE.set-condition($<term>.ast);
+        $*OUTER.push($*SCOPE);
+    }
+
     method statement:sym<intrinsic>($/) {
         $*SCOPE.push($<intrinsic>.ast);
     }
-
 
     method intrinsic:sym<gcsync>($/) {
         make LLR::Intrinsic::GCSync.new();

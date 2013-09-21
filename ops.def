@@ -1,8 +1,13 @@
 op no_op() {}
 
 op goto(int32 $0:u) {
-    vm::gcsync()
     vm::branch($0)
+    vm::gcsync()
+}
+
+op if_i(int64:r %0, int32 $1:u) {
+    if %0 vm::branch($1)
+    vm::gcsync()
 }
 
 op add_i(int64:w %0, int64:r %1, int64:r %2) {

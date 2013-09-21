@@ -20,7 +20,10 @@ grammar LLR::Grammar {
     token modeflag { ':' <( <[rw]> }
     token typeflag { ':' <( <[us]> }
 
-    token block { :s '{' ~ '}' [ <.nl>* <statement>* %% <.nl>+ ] }
+    token block {
+        :my $*OUTER := $*SCOPE;
+        :s '{' ~ '}' [ <.nl>* <statement>* %% <.nl>+ ]
+    }
 
     proto token statement {*}
 
@@ -34,6 +37,11 @@ grammar LLR::Grammar {
         :s <var> '=' <expression>
     }
 
+    token statement:sym<if> {
+        :my $*SCOPE := LLR::Control::If.new;
+        :s <sym> <term> <statement>
+    }
+
     proto token intrinsic {*}
     token intrinsic:sym<gcsync> { :s 'vm::'<sym> '(' ')' }
     token intrinsic:sym<branch> { :s 'vm::'<sym> '(' <var> ')' }
@@ -41,7 +49,7 @@ grammar LLR::Grammar {
     proto token var {*}
     token var:sym<%> { <sym> <name> <typeflag>? }
     token var:sym<$> { <sym> <name> <typeflag>? }
-    token var:sym<loc> { <!type> <lname> <typeflag>? }
+    token var:sym<loc> { <lname> <typeflag>? }
 
     proto token expression {*}
     token expression:sym<binary> { :s <term> <infix> <term> }
@@ -56,9 +64,10 @@ grammar LLR::Grammar {
     token term:sym<parcel> { :s '(' ~ ')' <expression> }
     token term:sym<int> { <[+-]>? \d+ }
 
+    token keyword { [ if | <type> ] <?ws> }
     token type { int8 | int16 | int32 | int64 | num32 | num64 | obj | str }
     token name { \w+ }
-    token lname { <![\d]> \w+ }
+    token lname { <!keyword> <[\w]-[\d]> \w* }
     token comma { :s ',' \n? }
     token nl { :s \n || ';' }
     token ws { <!ww> \h* || \h+ }
