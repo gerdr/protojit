@@ -64,7 +64,8 @@ my %typemap := nqp::hash(
 
 my %regmap := nqp::hash(
     'int64', 'i64',
-    'uint64', 'ui64'
+    'uint64', 'ui64',
+    'str', 's'
 );
 
 my %sizemap := nqp::hash(
@@ -157,13 +158,17 @@ multi toC(LLR::Int $int) {
     "{ $int.value }"
 }
 
-multi toC(LLR::Intrinsic::GCSync $sync) {
+multi toC(LLR::Intrinsic::VM::GCSync $sync) {
     'GC_SYNC_POINT(tc)'
 }
 
-multi toC(LLR::Intrinsic::Branch $branch) {
+multi toC(LLR::Intrinsic::VM::Branch $branch) {
     $*CUR_OFFSET := 0;
     "cur_op = bytecode_start + { toC($branch.args[0]) }"
+}
+
+multi toC(LLR::Builtin::Str::Graphs $graphs) {
+    "NUM_GRAPHS({ toC($graphs.args[0]) })"
 }
 
 multi toC(LLR::Control::If $if) {

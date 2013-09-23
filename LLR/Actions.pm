@@ -69,12 +69,16 @@ class LLR::Actions {
         $*SCOPE.push($<intrinsic>.ast);
     }
 
-    method intrinsic:sym<gcsync>($/) {
-        make LLR::Intrinsic::GCSync.new();
+    method intrinsic:sym<vm::gcsync>($/) {
+        make LLR::Intrinsic::VM::GCSync.new();
     }
 
-    method intrinsic:sym<branch>($/) {
-        make LLR::Intrinsic::Branch.new(args => [ $<var>.ast ]);
+    method intrinsic:sym<vm::branch>($/) {
+        make LLR::Intrinsic::VM::Branch.new(args => [ $<var>.ast ]);
+    }
+
+    method builtin:sym<str::graphs>($/) {
+        make LLR::Builtin::Str::Graphs.new(args => [ $<var>.ast ]);
     }
 
     method var:sym<%>($/) {
@@ -111,4 +115,5 @@ class LLR::Actions {
     method term:sym<var>($/) { make $<var>.ast }
     method term:sym<parcel>($/) { make $<expression>.ast }
     method term:sym<int>($/) { make LLR::Int.new(value => +$/) }
+    method term:sym<builtin>($/) { make $<builtin>.ast }
 }

@@ -59,8 +59,16 @@ my class Intrinsic {
     method args() { @!args }
 }
 
-class LLR::Intrinsic::GCSync is Intrinsic {}
-class LLR::Intrinsic::Branch is Intrinsic {}
+class LLR::Intrinsic::VM::GCSync is Intrinsic {}
+class LLR::Intrinsic::VM::Branch is Intrinsic {}
+
+my class Builtin {
+    has @!args;
+
+    method args() { @!args }
+}
+
+class LLR::Builtin::Str::Graphs is Builtin {}
 
 my class Control {
     has $!condition;
